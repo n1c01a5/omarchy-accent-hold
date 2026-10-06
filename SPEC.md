@@ -78,8 +78,10 @@ The English (ABC / US) variant sets, in macOS order:
 ### Choosing
 
 12. **F12** — A number key selects that variant: the popup closes and the
-    original letter is replaced. Numeric keypad keys count as numbers even
-    when NumLock is off, as on macOS.
+    original letter is replaced. Numbers go by physical key, as on macOS:
+    the number row counts with Shift held (`!` `@` `#`) and on layouts such
+    as AZERTY (`&` `é` `"`), and the numeric keypad counts even when NumLock
+    is off.
 13. **F13** — A click on a variant does the same.
 14. **F14** — Left/Right (and Tab/Shift+Tab) move the highlight. The first
     move highlights the first (or last) variant.

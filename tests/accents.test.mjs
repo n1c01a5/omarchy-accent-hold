@@ -80,25 +80,39 @@ test("numbers run 1 to 9 then 0", () => {
   assert.deepEqual(["1", "9", "0", "a", "12"].map(A.digitIndex), [0, 8, 9, -1, -1])
 })
 
+const tables = {
+  roles: { 1: { key: "Escape" }, 2: { key: "Named", name: "BackSpace" }, 10: { key: "Named", name: "End" }, 11: { key: "Left" } },
+  keypadDigits: { 10: "1", 11: "4" }
+}
+const press = (code, text, extra = {}) => A.keyInput({ code, text, keypad: false, scanCode: 0, ...extra }, tables)
+
 test("key input uses the role table, then the typed text", () => {
-  const roles = { 1: { key: "Escape" }, 2: { key: "Named", name: "BackSpace" } }
-  assert.deepEqual(A.keyInput(1, "\u001b", roles), { key: "Escape" })
-  assert.deepEqual(A.keyInput(2, "\b", roles), { key: "Named", name: "BackSpace" })
-  assert.deepEqual(A.keyInput(88, "x", roles), { key: "Text", text: "x" })
-  assert.deepEqual(A.keyInput(99, "\u0001", roles), { key: "Named" })
-  assert.deepEqual(A.keyInput(99, "", roles), { key: "Named" })
+  assert.deepEqual(press(1, "\u001b"), { key: "Escape" })
+  assert.deepEqual(press(2, "\b"), { key: "Named", name: "BackSpace" })
+  assert.deepEqual(press(88, "x"), { key: "Text", text: "x" })
+  assert.deepEqual(press(99, "\u0001"), { key: "Named" })
+  assert.deepEqual(press(99, ""), { key: "Named" })
+})
+
+test("number row picks digits by physical key, with Shift or AZERTY", () => {
+  assert.deepEqual(press(49, "1", { scanCode: 10 }), { key: "Text", text: "1" })
+  assert.deepEqual(press(33, "!", { scanCode: 10 }), { key: "Text", text: "1" })
+  assert.deepEqual(press(64, "@", { scanCode: 11 }), { key: "Text", text: "2" })
+  assert.deepEqual(press(38, "&", { scanCode: 10 }), { key: "Text", text: "1" })
+  assert.deepEqual(press(41, ")", { scanCode: 19 }), { key: "Text", text: "0" })
+  // Keys around the number row are not digits.
+  assert.deepEqual(press(96, "`", { scanCode: 49 }), { key: "Text", text: "`" })
+  assert.deepEqual(press(45, "-", { scanCode: 20 }), { key: "Text", text: "-" })
 })
 
 test("numeric keypad picks digits even with NumLock off", () => {
-  const roles = { 10: { key: "Named", name: "End" }, 11: { key: "Left" } }
-  const keypadDigits = { 10: "1", 11: "4" }
-  assert.deepEqual(A.keyInput(10, "", roles, true, keypadDigits), { key: "Text", text: "1" })
-  assert.deepEqual(A.keyInput(11, "", roles, true, keypadDigits), { key: "Text", text: "4" })
+  assert.deepEqual(press(10, "", { keypad: true }), { key: "Text", text: "1" })
+  assert.deepEqual(press(11, "", { keypad: true }), { key: "Text", text: "4" })
   // The same keys outside the keypad keep their meaning.
-  assert.deepEqual(A.keyInput(10, "", roles, false, keypadDigits), { key: "Named", name: "End" })
-  assert.deepEqual(A.keyInput(11, "", roles, false, keypadDigits), { key: "Left" })
+  assert.deepEqual(press(10, ""), { key: "Named", name: "End" })
+  assert.deepEqual(press(11, ""), { key: "Left" })
   // NumLock on: the keypad already sends the digit as text.
-  assert.deepEqual(A.keyInput(49, "1", roles, true, keypadDigits), { key: "Text", text: "1" })
+  assert.deepEqual(press(49, "1", { keypad: true, scanCode: 87 }), { key: "Text", text: "1" })
 })
 
 test("popup keys follow the macOS accent menu", () => {

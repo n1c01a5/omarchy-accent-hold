@@ -106,8 +106,12 @@ PanelWindow {
     focus: true
     Keys.onPressed: function(event) {
       event.accepted = true
-      var keypad = (event.modifiers & Qt.KeypadModifier) !== 0
-      var input = Accents.keyInput(event.key, event.text, window.keyRoles, keypad, window.keypadDigits)
+      var input = Accents.keyInput({
+        code: event.key,
+        text: event.text,
+        keypad: (event.modifiers & Qt.KeypadModifier) !== 0,
+        scanCode: event.nativeScanCode
+      }, { roles: window.keyRoles, keypadDigits: window.keypadDigits })
       window.decided(Accents.decideKey(input, { count: window.variants.length, highlighted: window.highlighted }))
     }
   }

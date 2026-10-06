@@ -73,6 +73,7 @@ check() {
 
 t_number() { hold $E 0.7; tap $TWO; }
 t_keypad() { hold $E 0.7; tap $KP2; }
+t_shift_number() { hold $E 0.7; down $SHIFT; tap $TWO; up $SHIFT; }
 t_tap() { tap $E; }
 t_escape() { hold $E 0.7; tap $ESC; }
 t_other_key() { hold $E 0.7; tap $X; }
@@ -83,6 +84,7 @@ t_rollover() { down $E; sleep 0.05; down $X; sleep 0.05; up $X; sleep 0.4; up $E
 
 check "number picks a variant (F12)" "é" t_number
 check "numeric keypad picks a variant, NumLock on or off (F12)" "é" t_keypad
+check "shifted number row (@) picks a variant (F12)" "é" t_shift_number
 check "quick tap types the letter (F3)" "e" t_tap
 check "escape keeps the letter (F16)" "e" t_escape
 check "other key keeps the letter and types it (F17)" "ex" t_other_key

@@ -117,15 +117,30 @@ function digitIndex(text) {
   return text === "0" ? 9 : Number(text) - 1
 }
 
-// Turns a Qt key press into the input decideKey expects. `roles` maps the Qt
-// key codes the popup reacts to (built from Qt.Key_* in QML) to their input.
-// `keypadDigits` maps the keys a numeric keypad sends while NumLock is off
-// (End, Down, ...) to their digit, so the keypad always picks a variant, as
-// on macOS.
-function keyInput(code, text, roles, keypad, keypadDigits) {
-  if (keypad && keypadDigits && keypadDigits[code]) return { key: "Text", text: keypadDigits[code] }
-  if (roles[code]) return roles[code]
-  var value = String(text || "")
+// XKB keycodes of the number row keys 1..9 and 0 (evdev KEY_1..KEY_0 + 8).
+var NUMBER_ROW_FIRST = 10
+var NUMBER_ROW_LAST = 19
+
+function numberRowDigit(scanCode) {
+  if (scanCode < NUMBER_ROW_FIRST || scanCode > NUMBER_ROW_LAST) return ""
+  return scanCode === NUMBER_ROW_LAST ? "0" : String(scanCode - NUMBER_ROW_FIRST + 1)
+}
+
+// Turns a Qt key press into the input decideKey expects.
+// press: { code: Qt key, text, keypad: KeypadModifier set, scanCode: XKB keycode }
+// tables.roles maps the Qt key codes the popup reacts to (built from Qt.Key_*
+// in QML) to their input. tables.keypadDigits maps the keys a numeric keypad
+// sends while NumLock is off (End, Down, ...) to their digit.
+// Digits go by physical key, as on macOS: the number row picks a variant
+// with Shift held (! @ #) and on layouts such as AZERTY (& é "), and the
+// keypad picks one whether NumLock is on or off.
+function keyInput(press, tables) {
+  var rowDigit = numberRowDigit(press.scanCode)
+  if (rowDigit) return { key: "Text", text: rowDigit }
+  var padDigit = press.keypad && tables.keypadDigits[press.code]
+  if (padDigit) return { key: "Text", text: padDigit }
+  if (tables.roles[press.code]) return tables.roles[press.code]
+  var value = String(press.text || "")
   var printable = value.length > 0 && value.charCodeAt(0) >= 32 && value.charCodeAt(0) !== 127
   return printable ? { key: "Text", text: value } : { key: "Named" }
 }

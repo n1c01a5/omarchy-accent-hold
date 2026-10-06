@@ -27,7 +27,7 @@ Disabling or removing the plugin removes every Hyprland bind it added. The plugi
 | Action | Result |
 |--------|--------|
 | Hold a letter with variants | The popup opens |
-| `1`–`9`, `0` (number row or keypad) | Replace the letter with that variant |
+| `1`–`9`, `0` (number row, with or without Shift, or keypad) | Replace the letter with that variant |
 | Click a variant | Same |
 | `←` `→`, `Tab` `Shift+Tab` | Move the highlight |
 | `Return` / `Space` | Confirm the highlight (typed normally if nothing is highlighted) |
