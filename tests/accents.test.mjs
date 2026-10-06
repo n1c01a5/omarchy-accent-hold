@@ -84,6 +84,18 @@ test("key input uses the role table, then the typed text", () => {
   assert.deepEqual(A.keyInput(99, "", roles), { key: "Named" })
 })
 
+test("numeric keypad picks digits even with NumLock off", () => {
+  const roles = { 10: { key: "Named", name: "End" }, 11: { key: "Left" } }
+  const keypadDigits = { 10: "1", 11: "4" }
+  assert.deepEqual(A.keyInput(10, "", roles, true, keypadDigits), { key: "Text", text: "1" })
+  assert.deepEqual(A.keyInput(11, "", roles, true, keypadDigits), { key: "Text", text: "4" })
+  // The same keys outside the keypad keep their meaning.
+  assert.deepEqual(A.keyInput(10, "", roles, false, keypadDigits), { key: "Named", name: "End" })
+  assert.deepEqual(A.keyInput(11, "", roles, false, keypadDigits), { key: "Left" })
+  // NumLock on: the keypad already sends the digit as text.
+  assert.deepEqual(A.keyInput(49, "1", roles, true, keypadDigits), { key: "Text", text: "1" })
+})
+
 test("popup keys follow the macOS accent menu", () => {
   const none = { count: 7, highlighted: -1 }
   const third = { count: 7, highlighted: 2 }

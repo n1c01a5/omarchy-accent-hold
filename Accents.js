@@ -119,7 +119,11 @@ function digitIndex(text) {
 
 // Turns a Qt key press into the input decideKey expects. `roles` maps the Qt
 // key codes the popup reacts to (built from Qt.Key_* in QML) to their input.
-function keyInput(code, text, roles) {
+// `keypadDigits` maps the keys a numeric keypad sends while NumLock is off
+// (End, Down, ...) to their digit, so the keypad always picks a variant, as
+// on macOS.
+function keyInput(code, text, roles, keypad, keypadDigits) {
+  if (keypad && keypadDigits && keypadDigits[code]) return { key: "Text", text: keypadDigits[code] }
   if (roles[code]) return roles[code]
   var value = String(text || "")
   var printable = value.length > 0 && value.charCodeAt(0) >= 32 && value.charCodeAt(0) !== 127

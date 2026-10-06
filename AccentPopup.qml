@@ -42,6 +42,22 @@ PanelWindow {
     return roles
   }
 
+  // Keypad keys without NumLock, mapped back to the digit printed on them.
+  readonly property var keypadDigits: {
+    var digits = {}
+    digits[Qt.Key_Insert] = "0"
+    digits[Qt.Key_End] = "1"
+    digits[Qt.Key_Down] = "2"
+    digits[Qt.Key_PageDown] = "3"
+    digits[Qt.Key_Left] = "4"
+    digits[Qt.Key_Clear] = "5"
+    digits[Qt.Key_Right] = "6"
+    digits[Qt.Key_Home] = "7"
+    digits[Qt.Key_Up] = "8"
+    digits[Qt.Key_PageUp] = "9"
+    return digits
+  }
+
   function open() {
     row.reset()
     window.visible = true
@@ -86,7 +102,8 @@ PanelWindow {
     focus: true
     Keys.onPressed: function(event) {
       event.accepted = true
-      var input = Accents.keyInput(event.key, event.text, window.keyRoles)
+      var keypad = (event.modifiers & Qt.KeypadModifier) !== 0
+      var input = Accents.keyInput(event.key, event.text, window.keyRoles, keypad, window.keypadDigits)
       window.decided(Accents.decideKey(input, { count: window.variants.length, highlighted: window.highlighted }))
     }
   }
