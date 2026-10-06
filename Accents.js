@@ -58,7 +58,7 @@ function parseConfig(text) {
   return {
     accents: accents,
     holdDelay: isFinite(holdDelay) && holdDelay > 0 ? Math.round(holdDelay) : 0,
-    position: raw.position === "pointer" ? "pointer" : "window",
+    position: ["window", "pointer"].indexOf(raw.position) !== -1 ? raw.position : "screen",
     excludeClasses: Array.isArray(raw.excludeClasses)
       ? raw.excludeClasses.filter(function(p) { return typeof p === "string" && p !== "" })
       : []

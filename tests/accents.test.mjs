@@ -16,7 +16,7 @@ test("defaults follow the macOS English sets", () => {
   assert.deepEqual(config.accents.e, ["è", "é", "ê", "ë", "ē", "ė", "ę"])
   assert.equal(A.letters(config.accents), "aceilnosuyz")
   assert.equal(config.holdDelay, 0)
-  assert.equal(config.position, "window")
+  assert.equal(config.position, "screen")
 })
 
 test("config overrides, disables and validates letters", () => {
@@ -36,12 +36,17 @@ test("config overrides, disables and validates letters", () => {
   assert.deepEqual(config.excludeClasses, ["^steam_app_"])
 })
 
+test("position accepts screen, window and pointer", () => {
+  for (const position of ["screen", "window", "pointer"])
+    assert.equal(A.parseConfig(JSON.stringify({ position })).position, position)
+})
+
 test("broken or hostile config falls back to defaults", () => {
   for (const text of ["{", "[]", "null", "42", '{"holdDelay":-5,"position":"nowhere"}']) {
     const config = A.parseConfig(text)
     assert.equal(A.letters(config.accents), "aceilnosuyz")
     assert.equal(config.holdDelay, 0)
-    assert.equal(config.position, "window")
+    assert.equal(config.position, "screen")
   }
 })
 
@@ -57,7 +62,7 @@ test("lua config is a quoted, escaped table", () => {
   const config = A.parseConfig(JSON.stringify({ excludeClasses: ['a"b\\c'] }))
   assert.equal(
     A.luaConfig(config),
-    '{ letters = "aceilnosuyz", hold_delay = 0, position = "window", exclude_classes = {"a\\"b\\\\c"} }'
+    '{ letters = "aceilnosuyz", hold_delay = 0, position = "screen", exclude_classes = {"a\\"b\\\\c"} }'
   )
   assert.equal(A.luaString("/x/y z/accent-hold.lua"), '"/x/y z/accent-hold.lua"')
 })

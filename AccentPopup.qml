@@ -11,9 +11,10 @@ import "Accents.js" as Accents
 PanelWindow {
   id: window
 
-  // Global logical point to center on, and whether to sit above it instead.
+  // "screen" centers the row on this monitor. "window" centers it on
+  // anchorPoint (global logical coordinates); "pointer" sits above it.
+  property string placement: "screen"
   property point anchorPoint: Qt.point(0, 0)
-  property bool above: false
   property var variants: []
   property int highlighted: -1
 
@@ -92,9 +93,12 @@ PanelWindow {
     readonly property real localY: window.anchorPoint.y - (window.screen ? window.screen.y : 0)
     readonly property real margin: Style.gapsOut * 2
 
-    x: Math.max(margin, Math.min(window.width - width - margin, localX - width / 2))
+    readonly property real targetX: window.placement === "screen" ? window.width / 2 : localX
+    readonly property real targetY: window.placement === "screen" ? window.height / 2 : localY
+
+    x: Math.max(margin, Math.min(window.width - width - margin, targetX - width / 2))
     y: Math.max(margin, Math.min(window.height - height - margin,
-      window.above ? localY - height - Style.space(16) : localY - height / 2))
+      window.placement === "pointer" ? targetY - height - Style.space(16) : targetY - height / 2))
   }
 
   Item {

@@ -69,8 +69,9 @@ The English (ABC / US) variant sets, in macOS order:
    order, with the numbers 1 to 9 (then 0 for a tenth variant) under them.
 9. **F9** — The popup uses the colors and fonts of the current Omarchy theme.
 10. **F10** — Wayland gives third-party programs no access to the text caret
-    position. The popup is centered on the focused window. With
-    `"position": "pointer"`, it opens above the mouse pointer instead.
+    position. The popup is centered on the screen that shows the focused
+    window. With `"position": "window"` it is centered on the focused window;
+    with `"position": "pointer"` it opens above the mouse pointer.
 11. **F11** — Shift held at the start of the hold, or Caps Lock on, shows the
     uppercase variants.
 
@@ -109,14 +110,14 @@ reloaded on save.
 ```json
 {
   "holdDelay": 0,
-  "position": "window",
+  "position": "screen",
   "excludeClasses": ["^steam_app_"],
   "accents": { "e": "éèêëēėę" }
 }
 ```
 
 - `holdDelay`: milliseconds, `0` means automatic; capped as described in F2.
-- `position`: `"window"` or `"pointer"`.
+- `position`: `"screen"` (default), `"window"` or `"pointer"`.
 - `excludeClasses`: Lua patterns matched against the window class.
 - `accents`: per-letter variant strings that replace the defaults; an empty
   string turns a letter off. Uppercase variants are derived automatically.

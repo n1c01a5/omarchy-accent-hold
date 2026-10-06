@@ -49,7 +49,7 @@ Item {
     if (popup.variants.length === 0) return
     popup.screen = root.screenFor(hold.monitor)
     popup.anchorPoint = Qt.point(hold.x, hold.y)
-    popup.above = root.config.position === "pointer"
+    popup.placement = root.config.position
     popup.highlighted = -1
     popup.open()
     capsProc.running = true

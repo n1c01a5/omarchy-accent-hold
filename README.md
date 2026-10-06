@@ -48,7 +48,7 @@ Optional: create `~/.config/omarchy/accent-hold.json`. It reloads on save.
 ```json
 {
   "holdDelay": 0,
-  "position": "window",
+  "position": "screen",
   "excludeClasses": ["^steam_app_"],
   "accents": { "e": "éèêëēėę", "o": "" }
 }
@@ -57,7 +57,7 @@ Optional: create `~/.config/omarchy/accent-hold.json`. It reloads on save.
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `holdDelay` | `0` | Milliseconds before the popup opens. `0` follows `repeat_delay`. It can only shorten the delay. |
-| `position` | `"window"` | `"window"` centers the popup on the focused window. `"pointer"` opens it above the mouse pointer. |
+| `position` | `"screen"` | `"screen"` centers the popup on the screen of the focused window. `"window"` centers it on the focused window. `"pointer"` opens it above the mouse pointer. |
 | `excludeClasses` | `[]` | [Lua patterns](https://www.lua.org/manual/5.4/manual.html#6.4.1) for window classes where the popup never opens. |
 | `accents` | macOS set | Variant strings per letter, in display order. Use `""` to turn a letter off. Uppercase forms are derived automatically. |
 
