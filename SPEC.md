@@ -87,8 +87,10 @@ The English (ABC / US) variant sets, in macOS order:
     move highlights the first (or last) variant.
 15. **F15** — Return or Space confirm the highlighted variant. With nothing
     highlighted, they close the popup and are typed into the application.
-16. **F16** — Escape, or a click outside the popup, closes it and keeps the
-    original letter.
+16. **F16** — Escape closes the popup and keeps the original letter.
+    Switching window, workspace or monitor also closes it. (A click outside
+    the popup is not detected: Hyprland's focus grab would hand the held
+    letter back to the popup as a new key press.)
 17. **F17** — Any other key closes the popup, keeps the original letter and
     is typed into the application. Backspace therefore deletes the original
     letter, as on macOS.

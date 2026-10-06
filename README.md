@@ -31,7 +31,7 @@ Disabling or removing the plugin removes every Hyprland bind it added. The plugi
 | Click a variant | Same |
 | `←` `→`, `Tab` `Shift+Tab` | Move the highlight |
 | `Return` / `Space` | Confirm the highlight (typed normally if nothing is highlighted) |
-| `Esc` or click outside | Close and keep the letter |
+| `Esc` | Close and keep the letter |
 | Any other key | Close, keep the letter, and type that key |
 | Hold `Shift`, or Caps Lock on | Uppercase variants |
 
@@ -67,6 +67,7 @@ Wayland gives other programs no access to the text caret position. For this reas
 
 - `hypr/accent-hold.lua` is loaded into Hyprland with `hyprctl eval`. It adds one non-consuming bind per accent letter and watches Hyprland's key events. When a letter stays down for the hold delay, it sends a custom Hyprland IPC event.
 - `Service.qml` runs inside `omarchy-shell`. It receives the event, shows the popup with the current Omarchy theme, and types the result with `wtype` (`BackSpace` and then the variant).
+- The popup must take the keyboard before key repeat starts, so its layer surface stays mapped between holds as an invisible, click-through 1×1 pixel. Opening only resizes it. While a fullscreen window is active, the surface is removed.
 - The plugin loads the Lua again after each Hyprland config reload and removes it when the plugin is disabled.
 
 The plugin does not need root or the `input` group, and it never reads `/dev/input`. It only sees the keys that Hyprland's keybind engine already sees.

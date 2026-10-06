@@ -5,9 +5,15 @@ import Quickshell.Wayland
 import qs.Commons
 import "Accents.js" as Accents
 
-// Full-screen transparent layer on one monitor. It takes the keyboard while
-// open, which also stops the application from auto-repeating the held
-// letter, and turns every key press or click into a decision for the service.
+// Layer surface the size of the accent row. Taking the keyboard is what stops
+// auto-repeat of the held letter (fcitx5 repeats keys until the focus moves),
+// so opening must beat input.repeat_delay. Creating a layer surface takes
+// 45-70 ms, so the surface stays mapped between holds as an invisible,
+// click-through 1x1 pixel without keyboard focus; opening only resizes it and
+// takes the keyboard. While a fullscreen window is active it is unmapped
+// instead, so it never sits above games or video.
+// No HyprlandFocusGrab: it hands the still-held letter to the popup as a
+// fresh key press.
 PanelWindow {
   id: window
 
@@ -17,6 +23,9 @@ PanelWindow {
   property point anchorPoint: Qt.point(0, 0)
   property var variants: []
   property int highlighted: -1
+
+  property bool shown: false
+  property bool parked: false
 
   signal decided(var decision)
 
@@ -61,44 +70,52 @@ PanelWindow {
 
   function open() {
     row.reset()
-    window.visible = true
+    window.shown = true
     Qt.callLater(function() { keyCatcher.forceActiveFocus() })
   }
 
   function close() {
-    window.visible = false
+    window.shown = false
   }
 
-  visible: false
-  anchors { top: true; bottom: true; left: true; right: true }
+  readonly property Region clickThrough: Region {}
+
+  readonly property real screenWidth: window.screen ? window.screen.width : 0
+  readonly property real screenHeight: window.screen ? window.screen.height : 0
+  readonly property real localX: window.anchorPoint.x - (window.screen ? window.screen.x : 0)
+  readonly property real localY: window.anchorPoint.y - (window.screen ? window.screen.y : 0)
+  readonly property real targetX: window.placement === "screen" ? window.screenWidth / 2 : window.localX
+  readonly property real targetY: window.placement === "screen" ? window.screenHeight / 2 : window.localY
+  readonly property real edge: Style.gapsOut * 2
+
+  function clamp(value, low, high) {
+    return Math.max(low, Math.min(high, value))
+  }
+
+  visible: window.shown || !window.parked
   color: "transparent"
+  anchors { top: true; left: true }
+  margins {
+    left: window.clamp(window.targetX - row.width / 2, window.edge, window.screenWidth - row.width - window.edge)
+    top: window.clamp(window.placement === "pointer" ? window.targetY - row.height - Style.space(16)
+                                                     : window.targetY - row.height / 2,
+                      window.edge, window.screenHeight - row.height - window.edge)
+  }
+  implicitWidth: window.shown ? row.width : 1
+  implicitHeight: window.shown ? row.height : 1
+  mask: window.shown ? null : window.clickThrough
   exclusionMode: ExclusionMode.Ignore
   WlrLayershell.namespace: "accent-hold"
   WlrLayershell.layer: WlrLayer.Overlay
-  WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-
-  MouseArea {
-    anchors.fill: parent
-    onClicked: window.decided({ action: "cancel" })
-  }
+  WlrLayershell.keyboardFocus: window.shown ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
   AccentRow {
     id: row
+    visible: window.shown
     variants: window.variants
     highlighted: window.highlighted
     onPicked: function(index) { window.decided({ action: "commit", index: index }) }
     onHovered: function(index) { window.decided({ action: "highlight", index: index }) }
-
-    readonly property real localX: window.anchorPoint.x - (window.screen ? window.screen.x : 0)
-    readonly property real localY: window.anchorPoint.y - (window.screen ? window.screen.y : 0)
-    readonly property real margin: Style.gapsOut * 2
-
-    readonly property real targetX: window.placement === "screen" ? window.width / 2 : localX
-    readonly property real targetY: window.placement === "screen" ? window.height / 2 : localY
-
-    x: Math.max(margin, Math.min(window.width - width - margin, targetX - width / 2))
-    y: Math.max(margin, Math.min(window.height - height - margin,
-      window.placement === "pointer" ? targetY - height - Style.space(16) : targetY - height / 2))
   }
 
   Item {

@@ -43,7 +43,7 @@ Item {
   }
 
   function show(hold) {
-    if (!hold || popup.visible) return
+    if (!hold || popup.shown) return
     root.hold = hold
     root.showVariants(hold.shift)
     if (popup.variants.length === 0) return
@@ -52,7 +52,8 @@ Item {
     popup.placement = root.config.position
     popup.highlighted = -1
     popup.open()
-    capsProc.running = true
+    // After the popup is up: starting a process must not delay its first frame.
+    capsTimer.restart()
   }
 
   // Close first so the application has the keyboard back before typing.
@@ -108,7 +109,7 @@ Item {
     command: ["hyprctl", "devices", "-j"]
     stdout: StdioCollector {
       onStreamFinished: {
-        if (!popup.visible) return
+        if (!popup.shown) return
         try {
           var keyboards = JSON.parse(text).keyboards || []
           if (keyboards.some(function(k) { return k.main && k.capsLock }))
@@ -116,6 +117,12 @@ Item {
         } catch (e) {}
       }
     }
+  }
+
+  Timer {
+    id: capsTimer
+    interval: 100
+    onTriggered: if (popup.shown) capsProc.running = true
   }
 
   Timer {
@@ -135,6 +142,11 @@ Item {
       case "configreloaded":
         root.inject()
         break
+      case "fullscreen":
+        popup.parked = event.data === "1"
+        break
+      // Clicking another window (or moving away) closes the popup.
+      case "activewindowv2":
       case "workspace":
       case "focusedmon":
         popup.close()
