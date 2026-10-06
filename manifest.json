@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.n1c01a5.accent-hold",
+  "name": "Accent Hold",
+  "version": "0.1.0",
+  "author": "n1c01a5",
+  "license": "MIT",
+  "description": "macOS-style press and hold for accented characters: hold a letter, pick é è ê ë… from a popup",
+  "kinds": [
+    "service"
+  ],
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}
