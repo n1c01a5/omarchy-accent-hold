@@ -17,7 +17,7 @@ PASS=0
 FAIL=0
 
 # Linux input event codes.
-E=18 X=45 B=48 TWO=3 ENTER=28 ESC=1 SHIFT=42 RIGHT=106 KP2=80
+E=18 X=45 B=48 ONE=2 TWO=3 ENTER=28 ESC=1 SHIFT=42 RIGHT=106 KP2=80
 
 # Wait until the plugin service has loaded its binds into Hyprland.
 for _ in {1..50}; do
@@ -73,6 +73,8 @@ check() {
 
 t_number() { hold $E 0.7; tap $TWO; }
 t_keypad() { hold $E 0.7; tap $KP2; }
+# A human keeps the digit down a while; wtype must not type before it is up.
+t_slow_one() { hold $E 0.7; down $ONE; sleep 0.2; up $ONE; sleep 0.3; }
 t_shift_number() { hold $E 0.7; down $SHIFT; tap $TWO; up $SHIFT; }
 t_tap() { tap $E; }
 t_escape() { hold $E 0.7; tap $ESC; }
@@ -84,6 +86,7 @@ t_rollover() { down $E; sleep 0.05; down $X; sleep 0.05; up $X; sleep 0.4; up $E
 
 check "number picks a variant (F12)" "é" t_number
 check "numeric keypad picks a variant, NumLock on or off (F12)" "é" t_keypad
+check "1 held down like a human picks the first variant (F12)" "è" t_slow_one
 check "shifted number row (@) picks a variant (F12)" "é" t_shift_number
 check "quick tap types the letter (F3)" "e" t_tap
 check "escape keeps the letter (F16)" "e" t_escape

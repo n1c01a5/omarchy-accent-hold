@@ -95,7 +95,9 @@ The English (ABC / US) variant sets, in macOS order:
     is typed into the application. Backspace therefore deletes the original
     letter, as on macOS.
 18. **F18** — The replacement is a Backspace followed by the variant, typed
-    with `wtype`. It works in every Wayland and XWayland application.
+    with `wtype`. It works in every Wayland and XWayland application. A key
+    takes effect when it is released, so nothing is typed while a physical
+    key is still down (wtype's virtual keys would collide with it).
 
 ### Lifecycle and safety
 

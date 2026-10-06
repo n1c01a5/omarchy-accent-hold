@@ -68,8 +68,25 @@ PanelWindow {
     return digits
   }
 
+  // A key's decision is taken when it goes down but applied when it comes up.
+  // The service then types with wtype, whose virtual keyboard reuses low
+  // keycodes (its second key has the keycode of "1"); typing while the
+  // physical key is still down makes Hyprland drop that character.
+  property var pendingDecision: null
+  property int pendingScanCode: -1
+
+  function flushPending() {
+    var decision = window.pendingDecision
+    window.pendingDecision = null
+    window.pendingScanCode = -1
+    releaseFallback.stop()
+    if (decision) window.decided(decision)
+  }
+
   function open() {
     row.reset()
+    window.pendingDecision = null
+    window.pendingScanCode = -1
     window.shown = true
     Qt.callLater(function() { keyCatcher.forceActiveFocus() })
   }
@@ -123,13 +140,33 @@ PanelWindow {
     focus: true
     Keys.onPressed: function(event) {
       event.accepted = true
+      if (event.isAutoRepeat) return
+      window.flushPending()
       var input = Accents.keyInput({
         code: event.key,
         text: event.text,
         keypad: (event.modifiers & Qt.KeypadModifier) !== 0,
         scanCode: event.nativeScanCode
       }, { roles: window.keyRoles, keypadDigits: window.keypadDigits })
-      window.decided(Accents.decideKey(input, { count: window.variants.length, highlighted: window.highlighted }))
+      var decision = Accents.decideKey(input, { count: window.variants.length, highlighted: window.highlighted })
+      if (decision.action === "highlight" || decision.action === "ignore") {
+        window.decided(decision)
+        return
+      }
+      window.pendingDecision = decision
+      window.pendingScanCode = event.nativeScanCode
+      releaseFallback.restart()
     }
+    Keys.onReleased: function(event) {
+      event.accepted = true
+      if (!event.isAutoRepeat && event.nativeScanCode === window.pendingScanCode) window.flushPending()
+    }
+  }
+
+  // Applies the decision anyway if the release never reaches the popup.
+  Timer {
+    id: releaseFallback
+    interval: 1000
+    onTriggered: window.flushPending()
   }
 }
