@@ -75,6 +75,15 @@ test("numbers run 1 to 9 then 0", () => {
   assert.deepEqual(["1", "9", "0", "a", "12"].map(A.digitIndex), [0, 8, 9, -1, -1])
 })
 
+test("key input uses the role table, then the typed text", () => {
+  const roles = { 1: { key: "Escape" }, 2: { key: "Named", name: "BackSpace" } }
+  assert.deepEqual(A.keyInput(1, "\u001b", roles), { key: "Escape" })
+  assert.deepEqual(A.keyInput(2, "\b", roles), { key: "Named", name: "BackSpace" })
+  assert.deepEqual(A.keyInput(88, "x", roles), { key: "Text", text: "x" })
+  assert.deepEqual(A.keyInput(99, "\u0001", roles), { key: "Named" })
+  assert.deepEqual(A.keyInput(99, "", roles), { key: "Named" })
+})
+
 test("popup keys follow the macOS accent menu", () => {
   const none = { count: 7, highlighted: -1 }
   const third = { count: 7, highlighted: 2 }

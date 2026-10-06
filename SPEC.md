@@ -48,7 +48,9 @@ The English (ABC / US) variant sets, in macOS order:
 2. **F2** — The popup opens after the hold delay. The default hold delay is
    Hyprland's `input.repeat_delay` minus a 60 ms lead, so the popup always
    opens before the application starts to auto-repeat the letter. The
-   minimum is 120 ms. `holdDelay` in the config file overrides the default.
+   minimum is 120 ms. `holdDelay` in the config file can shorten the delay
+   but never lengthen it past that limit; raise `input.repeat_delay` in
+   Hyprland for a longer hold, like "Delay until repeat" on macOS.
 3. **F3** — The letter is typed normally when the key goes down. Nothing is
    delayed while typing.
 4. **F4** — Pressing any other key before the delay ends cancels the
@@ -112,7 +114,7 @@ reloaded on save.
 }
 ```
 
-- `holdDelay`: milliseconds, `0` means automatic (F2).
+- `holdDelay`: milliseconds, `0` means automatic; capped as described in F2.
 - `position`: `"window"` or `"pointer"`.
 - `excludeClasses`: Lua patterns matched against the window class.
 - `accents`: per-letter variant strings that replace the defaults; an empty

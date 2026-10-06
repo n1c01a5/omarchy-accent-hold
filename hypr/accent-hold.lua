@@ -34,13 +34,16 @@ _G.__accent_hold = M
 local pending = nil
 local last_pressed_keycode = nil
 
+-- The popup must open before the application starts auto-repeating the
+-- letter, so the delay never exceeds input.repeat_delay minus a short lead.
 local function hold_delay()
+  local repeat_delay = tonumber((hl.get_config("input.repeat_delay"))) or 600
+  local limit = math.max(MIN_DELAY_MS, repeat_delay - LEAD_MS)
   local configured = tonumber(cfg.hold_delay) or 0
   if configured > 0 then
-    return math.max(MIN_DELAY_MS, math.floor(configured))
+    return math.max(MIN_DELAY_MS, math.min(limit, math.floor(configured)))
   end
-  local repeat_delay = tonumber((hl.get_config("input.repeat_delay"))) or 600
-  return math.max(MIN_DELAY_MS, repeat_delay - LEAD_MS)
+  return limit
 end
 
 local function any_down(keys)
@@ -164,5 +167,3 @@ function M.stop()
   M.subscriptions = {}
   _G.__accent_hold = nil
 end
-
-return #M.binds

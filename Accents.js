@@ -117,6 +117,15 @@ function digitIndex(text) {
   return text === "0" ? 9 : Number(text) - 1
 }
 
+// Turns a Qt key press into the input decideKey expects. `roles` maps the Qt
+// key codes the popup reacts to (built from Qt.Key_* in QML) to their input.
+function keyInput(code, text, roles) {
+  if (roles[code]) return roles[code]
+  var value = String(text || "")
+  var printable = value.length > 0 && value.charCodeAt(0) >= 32 && value.charCodeAt(0) !== 127
+  return printable ? { key: "Text", text: value } : { key: "Named" }
+}
+
 // Decides what a key press in the popup does.
 // input: { key: "Left"|"Right"|"Tab"|"Backtab"|"Return"|"Space"|"Escape"
 //               |"Modifier"|"Named"|"Text", name?: keysym, text?: string }
@@ -178,6 +187,7 @@ if (typeof module !== "undefined") {
     parseEvent: parseEvent,
     numberLabel: numberLabel,
     digitIndex: digitIndex,
+    keyInput: keyInput,
     decideKey: decideKey,
     commitCommand: commitCommand,
     passCommand: passCommand
