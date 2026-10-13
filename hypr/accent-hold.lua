@@ -76,7 +76,8 @@ local function xy(value)
   return value.x or value[1] or 0, value.y or value[2] or 0
 end
 
--- Target point for the popup, in global logical coordinates.
+-- Point the popup is placed against, in global logical coordinates, and the
+-- monitor it belongs to. With the "screen" position only the monitor is used.
 local function anchor(window)
   if cfg.position == "pointer" or not window then
     local cursor = hl.get_cursor_pos() or {}

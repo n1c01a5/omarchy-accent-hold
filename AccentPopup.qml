@@ -75,6 +75,16 @@ PanelWindow {
   property var pendingDecision: null
   property int pendingScanCode: -1
 
+  readonly property Region clickThrough: Region {}
+
+  readonly property real screenWidth: window.screen ? window.screen.width : 0
+  readonly property real screenHeight: window.screen ? window.screen.height : 0
+  readonly property real localX: window.anchorPoint.x - (window.screen ? window.screen.x : 0)
+  readonly property real localY: window.anchorPoint.y - (window.screen ? window.screen.y : 0)
+  readonly property real targetX: window.placement === "screen" ? window.screenWidth / 2 : window.localX
+  readonly property real targetY: window.placement === "screen" ? window.screenHeight / 2 : window.localY
+  readonly property real edge: Style.gapsOut * 2
+
   function flushPending() {
     var decision = window.pendingDecision
     window.pendingDecision = null
@@ -94,16 +104,6 @@ PanelWindow {
   function close() {
     window.shown = false
   }
-
-  readonly property Region clickThrough: Region {}
-
-  readonly property real screenWidth: window.screen ? window.screen.width : 0
-  readonly property real screenHeight: window.screen ? window.screen.height : 0
-  readonly property real localX: window.anchorPoint.x - (window.screen ? window.screen.x : 0)
-  readonly property real localY: window.anchorPoint.y - (window.screen ? window.screen.y : 0)
-  readonly property real targetX: window.placement === "screen" ? window.screenWidth / 2 : window.localX
-  readonly property real targetY: window.placement === "screen" ? window.screenHeight / 2 : window.localY
-  readonly property real edge: Style.gapsOut * 2
 
   function clamp(value, low, high) {
     return Math.max(low, Math.min(high, value))

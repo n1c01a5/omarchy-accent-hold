@@ -145,7 +145,7 @@ Item {
       case "fullscreen":
         popup.parked = event.data === "1"
         break
-      // Clicking another window (or moving away) closes the popup.
+      // Switching window, workspace or monitor closes the popup.
       case "activewindowv2":
       case "workspace":
       case "focusedmon":

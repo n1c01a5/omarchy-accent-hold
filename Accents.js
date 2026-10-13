@@ -21,6 +21,10 @@ var DEFAULT_ACCENTS = {
 var EVENT_PREFIX = "accent-hold>>"
 var MAX_VARIANTS = 10
 
+// XKB keycodes of the number row keys 1..9 and 0 (evdev KEY_1..KEY_0 + 8).
+var NUMBER_ROW_FIRST = 10
+var NUMBER_ROW_LAST = 19
+
 function chars(text) {
   return Array.from(String(text || ""))
 }
@@ -116,10 +120,6 @@ function digitIndex(text) {
   if (!/^[0-9]$/.test(text)) return -1
   return text === "0" ? 9 : Number(text) - 1
 }
-
-// XKB keycodes of the number row keys 1..9 and 0 (evdev KEY_1..KEY_0 + 8).
-var NUMBER_ROW_FIRST = 10
-var NUMBER_ROW_LAST = 19
 
 function numberRowDigit(scanCode) {
   if (scanCode < NUMBER_ROW_FIRST || scanCode > NUMBER_ROW_LAST) return ""

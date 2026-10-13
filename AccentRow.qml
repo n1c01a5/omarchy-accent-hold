@@ -34,9 +34,6 @@ BorderSurface {
   borderSpec: Border.surfaceSpec("menu", "border", Color.menu.border, Math.max(1, Style.space(2)))
   padding: Style.spacing.sm
 
-  // Swallow clicks so they do not reach the dismiss area behind the card.
-  MouseArea { anchors.fill: parent }
-
   Row {
     id: row
     x: card.contentLeftInset
