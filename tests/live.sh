@@ -17,7 +17,7 @@ PASS=0
 FAIL=0
 
 # Linux input event codes.
-E=18 X=45 B=48 ONE=2 TWO=3 ENTER=28 ESC=1 SHIFT=42 RIGHT=106 KP2=80
+E=18 U=22 X=45 B=48 ONE=2 TWO=3 ENTER=28 ESC=1 SHIFT=42 RIGHT=106 KP2=80
 
 # Wait until the plugin service has loaded its binds into Hyprland.
 for _ in {1..50}; do
@@ -77,6 +77,7 @@ t_keypad() { hold $E 0.7; tap $KP2; }
 t_slow_one() { hold $E 0.7; down $ONE; sleep 0.2; up $ONE; sleep 0.3; }
 t_shift_number() { hold $E 0.7; down $SHIFT; tap $TWO; up $SHIFT; }
 t_tap() { tap $E; }
+t_lower_u() { hold $U 0.7; tap $ONE; }
 t_escape() { hold $E 0.7; tap $ESC; }
 t_other_key() { hold $E 0.7; tap $X; }
 t_shift() { down $SHIFT; hold $E 0.7; up $SHIFT; tap $TWO; }
@@ -88,6 +89,7 @@ check "number picks a variant (F12)" "é" t_number
 check "numeric keypad picks a variant, NumLock on or off (F12)" "é" t_keypad
 check "1 held down like a human picks the first variant (F12)" "è" t_slow_one
 check "shifted number row (@) picks a variant (F12)" "é" t_shift_number
+check "u without Shift stays lowercase (F11)" "û" t_lower_u
 check "quick tap types the letter (F3)" "e" t_tap
 check "escape keeps the letter (F16)" "e" t_escape
 check "other key keeps the letter and types it (F17)" "ex" t_other_key
